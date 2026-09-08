@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 import bcrypt
 import jwt
 
-JWT_SECRET = os.getenv("JWT_SECRET", "MHProjet14")
+JWT_SECRET = os.environ["JWT_SECRET"]
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRES_MINUTES = 60 * 24
 
