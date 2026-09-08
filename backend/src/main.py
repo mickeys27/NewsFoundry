@@ -52,4 +52,8 @@ async def login(credentials: LoginRequest, session: Session = Depends(get_sessio
 if __name__ == "__main__":
     init_db()
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=int(os.getenv("PORT", 8000)),
+    )
