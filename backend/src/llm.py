@@ -1,7 +1,10 @@
+import logging
 import os
 
 from pydantic_ai import Agent
 from pydantic_ai.models.mistral import MistralModel
+
+logger = logging.getLogger(__name__)
 
 MISTRAL_MODEL_NAME = os.getenv("MISTRAL_MODEL", "mistral-small-latest")
 
@@ -24,6 +27,7 @@ async def generate_reply(history: list[dict], system_prompt: str) -> str:
         agent = _build_agent(system_prompt)
         result = await agent.run(conversation)
     except Exception as error:
+        logger.exception("Mistral request failed")
         raise LLMError("The LLM provider could not be reached") from error
 
     return result.output

@@ -64,6 +64,30 @@
   background: #f1ecfd;
 }
 
+.envLinks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin: 0 16px 12px;
+}
+
+.envLink {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #e5e5ea;
+  background: #f7f7fb;
+  color: #4a4a4a;
+  font-size: 12px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.envLink:hover {
+  background: #f1ecfd;
+  border-color: #7c3aed;
+  color: #7c3aed;
+}
+
 .discussionList {
   flex: 1;
   overflow-y: auto;
@@ -95,6 +119,12 @@
 .discussionTitle {
   font-size: 14px;
   color: #1a1a1a;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
 }
 
 .discussionDate {
@@ -248,11 +278,33 @@
 
 .messageRow {
   display: flex;
+  align-items: flex-end;
+  gap: 8px;
   justify-content: flex-start;
 }
 
 .messageRowUser {
   justify-content: flex-end;
+}
+
+.avatarAssistant,
+.avatarUser {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.avatarAssistant {
+  background: #f1ecfd;
+}
+
+.avatarUser {
+  background: #2a2a31;
 }
 
 .bubbleAssistant,
@@ -272,7 +324,7 @@
 }
 
 .bubbleUser {
-  background: #7c3aed;
+  background: #2a2a31;
   color: #ffffff;
   border-bottom-right-radius: 4px;
 }

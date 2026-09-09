@@ -39,6 +39,7 @@ class ChatCreateResponse(BaseModel):
 class ChatSummary(BaseModel):
     id: int
     created_at: datetime
+    last_message: str | None = None
 
 
 class ChatDetailResponse(BaseModel):
@@ -136,7 +137,14 @@ async def list_chats(
     chats = session.exec(
         select(Chat).where(Chat.user_id == current_user.id).order_by(Chat.created_at.desc())
     ).all()
-    return [ChatSummary(id=chat.id, created_at=chat.created_at) for chat in chats]
+    return [
+        ChatSummary(
+            id=chat.id,
+            created_at=chat.created_at,
+            last_message=chat.messages[-1]["content"] if chat.messages else None,
+        )
+        for chat in chats
+    ]
 
 
 @app.post("/chats", response_model=ChatCreateResponse)

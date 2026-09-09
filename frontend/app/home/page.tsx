@@ -20,6 +20,13 @@ const examples = [
   "Résume l'actualité économique de la semaine",
 ];
 
+const envLinks = [
+  { label: "Local front", href: "http://localhost:3000/home" },
+  { label: "Local back", href: "http://localhost:8000/" },
+  { label: "Prod front", href: "https://news-foundry-git-main-generate-ia.vercel.app/" },
+  { label: "Prod back", href: "https://newsfoundry-production-ac98.up.railway.app/" },
+];
+
 function formatDate(isoDate: string): string {
   return new Date(isoDate).toLocaleDateString("fr-FR");
 }
@@ -86,13 +93,18 @@ export default function Home() {
         chatId = await createChat();
         setActiveChatId(chatId);
         setChats((previous) => [
-          { id: chatId as number, created_at: new Date().toISOString() },
+          { id: chatId as number, created_at: new Date().toISOString(), last_message: content },
           ...previous,
         ]);
       }
 
       const reply = await sendMessage(chatId, content);
       setMessages((previous) => [...previous, reply]);
+      setChats((previous) =>
+        previous.map((chat) =>
+          chat.id === chatId ? { ...chat, last_message: reply.content } : chat
+        )
+      );
     } catch (err) {
       setError(err instanceof ChatError ? err.message : "Une erreur est survenue.");
     } finally {
@@ -121,6 +133,20 @@ export default function Home() {
             + Nouvelle discussion
           </button>
 
+          <div className={styles.envLinks}>
+            {envLinks.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.envLink}
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
+
           <ul className={styles.discussionList}>
             {chats.map((chat) => (
               <li key={chat.id}>
@@ -133,7 +159,9 @@ export default function Home() {
                       : styles.discussionItem
                   }
                 >
-                  <div className={styles.discussionTitle}>Discussion du</div>
+                  <div className={styles.discussionTitle}>
+                    {chat.last_message || "Nouvelle discussion"}
+                  </div>
                   <div className={styles.discussionDate}>{formatDate(chat.created_at)}</div>
                 </button>
               </li>
@@ -193,6 +221,11 @@ export default function Home() {
                         : styles.messageRow
                     }
                   >
+                    {message.role === "assistant" && (
+                      <div className={styles.avatarAssistant} aria-hidden="true">
+                        🤖
+                      </div>
+                    )}
                     <div
                       className={
                         message.role === "user" ? styles.bubbleUser : styles.bubbleAssistant
@@ -200,10 +233,18 @@ export default function Home() {
                     >
                       {message.content}
                     </div>
+                    {message.role === "user" && (
+                      <div className={styles.avatarUser} aria-hidden="true">
+                        👤
+                      </div>
+                    )}
                   </div>
                 ))}
                 {isSending && (
                   <div className={styles.messageRow}>
+                    <div className={styles.avatarAssistant} aria-hidden="true">
+                      🤖
+                    </div>
                     <div className={styles.bubbleAssistant}>…</div>
                   </div>
                 )}

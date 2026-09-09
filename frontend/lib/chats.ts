@@ -10,6 +10,7 @@ export type ChatMessage = {
 export type ChatSummary = {
   id: number;
   created_at: string;
+  last_message: string | null;
 };
 
 function authHeaders(): HeadersInit {
