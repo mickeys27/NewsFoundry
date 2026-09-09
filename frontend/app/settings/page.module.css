@@ -1,0 +1,140 @@
+.appShell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f5f5f7;
+}
+
+.breadcrumb {
+  padding: 10px 20px;
+  font-size: 13px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.breadcrumbLink {
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.breadcrumbSeparator {
+  color: #9a9aa2;
+}
+
+.breadcrumbCurrent {
+  color: #6a6a6e;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px 40px;
+}
+
+.card {
+  width: 100%;
+  max-width: 640px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 6px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #6a6a6e;
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.textarea {
+  min-height: 220px;
+  resize: vertical;
+  border: 1px solid #e5e5ea;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #1a1a1a;
+  background: #f7f7fb;
+  font-family: inherit;
+}
+
+.textarea:disabled {
+  opacity: 0.6;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.saveButton {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+  background: #7c3aed;
+  cursor: pointer;
+}
+
+.saveButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.resetButton {
+  border: 1px solid #e5e5ea;
+  border-radius: 999px;
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #4a4a4a;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.resetButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.statusSuccess {
+  font-size: 13px;
+  color: #15803d;
+}
+
+.statusError {
+  font-size: 13px;
+  color: #dc2626;
+}
+
+.loadingText {
+  font-size: 14px;
+  color: #6a6a6e;
+}

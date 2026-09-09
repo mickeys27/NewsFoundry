@@ -3,7 +3,7 @@ name = "backend"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.104.0",
     "uvicorn[standard]>=0.24.0",
@@ -11,4 +11,16 @@ dependencies = [
     "psycopg2-binary>=2.9.9",
     "bcrypt>=4.3.0",
     "pyjwt>=2.13.0",
+    "pydantic-ai-slim[mistral]>=2.42.0",
+    "truststore>=0.10.4",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+asyncio_mode = "auto"

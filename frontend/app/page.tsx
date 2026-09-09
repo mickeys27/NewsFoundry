@@ -1,14 +1,15 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { login, LoginError, TOKEN_STORAGE_KEY } from "@/lib/auth";
 
 export default function Home() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -18,22 +19,11 @@ export default function Home() {
     try {
       const token = await login(email, password);
       localStorage.setItem(TOKEN_STORAGE_KEY, token);
-      setIsLoggedIn(true);
+      router.push("/home");
     } catch (err) {
       setError(err instanceof LoginError ? err.message : "Impossible de contacter le serveur.");
-    } finally {
       setIsLoading(false);
     }
-  }
-
-  if (isLoggedIn) {
-    return (
-      <div className="flex flex-1 items-center justify-center bg-zinc-50 dark:bg-black">
-        <p className="text-lg font-medium text-black dark:text-zinc-50">
-          Connecté avec succès ✅
-        </p>
-      </div>
-    );
   }
 
   return (

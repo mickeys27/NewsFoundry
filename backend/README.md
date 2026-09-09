@@ -23,3 +23,13 @@ docker run \
 ```bash
 uv run --env-file .env src/main.py
 ```
+
+## Tests
+
+```bash
+uv run pytest
+```
+
+Les tests utilisent une base SQLite en mémoire (aucune base Postgres requise) et
+remplacent le modèle Mistral par `TestModel` de PydanticAI, donc aucune clé API
+ni appel réseau n'est nécessaire pour les exécuter.
