@@ -1,11 +1,19 @@
 import llm
+import main
+import news
 from pydantic_ai.models.test import TestModel
 
 
 def use_test_model(monkeypatch, reply: str = "Réponse factice de test") -> None:
     """Replace the real Mistral model with PydanticAI's TestModel so tests
-    never call the real LLM provider and get a deterministic reply."""
-    monkeypatch.setattr(llm, "MistralModel", lambda *_args, **_kwargs: TestModel(custom_output_text=reply))
+    never call the real LLM provider and get a deterministic reply.
+    call_tools=[] so TestModel doesn't auto-probe the search_news tool
+    (which would otherwise hit the real World News API)."""
+    monkeypatch.setattr(
+        llm,
+        "MistralModel",
+        lambda *_args, **_kwargs: TestModel(custom_output_text=reply, call_tools=[]),
+    )
 
 
 # --- POST /chats -----------------------------------------------------------
@@ -156,3 +164,108 @@ def test_post_message_with_llm_failure_returns_502_without_persisting(
 
     detail = client.get(f"/chats/{chat_id}", headers=headers).json()
     assert detail["messages"] == []
+
+
+def test_post_message_gives_agent_a_search_news_tool(client, auth_headers, monkeypatch):
+    """The chat agent has a search_news tool available (backed by World News
+    API's /search-news) that it can call mid-conversation for fresh articles."""
+    captured_queries = []
+
+    def fake_search_news(query, *_args, **_kwargs):
+        captured_queries.append(query)
+        return [
+            {
+                "title": "Titre article",
+                "summary": "Resume article",
+                "text": "Texte complet",
+                "image": None,
+                "url": "https://example.com/article",
+                "publish_date": "2026-09-10 09:00:00",
+            }
+        ]
+
+    monkeypatch.setattr(news, "search_news", fake_search_news)
+    # call_tools="all" (TestModel's default) makes it probe every registered
+    # tool once, so this proves the tool is actually wired into the agent.
+    monkeypatch.setattr(
+        llm, "MistralModel", lambda *_a, **_kw: TestModel(custom_output_text="Reponse")
+    )
+
+    headers = auth_headers()
+    chat_id = client.post("/chats", headers=headers).json()["id"]
+
+    response = client.post(
+        f"/chats/{chat_id}/messages",
+        json={"content": "Donne-moi plus de details sur ce sujet"},
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    assert captured_queries, "the search_news tool should have been called"
+
+
+# --- System prompt continuity -------------------------------------------------
+
+
+def test_chat_captures_system_prompt_at_creation(client, auth_headers, monkeypatch):
+    """The system prompt (base instructions + that day's digest) is captured
+    once when the chat is created, not recomputed on the fly, so it survives
+    later changes to the global settings."""
+    headers = auth_headers()
+    client.put(
+        "/settings/system-prompt",
+        json={"system_prompt": "Instructions initiales"},
+        headers=headers,
+    )
+
+    chat_id = client.post("/chats", headers=headers).json()["id"]
+
+    # Changing the global prompt after the chat exists must not affect it.
+    client.put(
+        "/settings/system-prompt",
+        json={"system_prompt": "Instructions modifiees"},
+        headers=headers,
+    )
+
+    captured = []
+
+    async def fake_generate_reply(history, system_prompt, tools=()):
+        captured.append(system_prompt)
+        return "Reponse"
+
+    monkeypatch.setattr(main, "generate_reply", fake_generate_reply)
+    client.post(f"/chats/{chat_id}/messages", json={"content": "Bonjour"}, headers=headers)
+
+    assert captured == ["Instructions initiales"]
+
+
+def test_post_message_reuses_the_same_system_prompt_across_the_whole_discussion(
+    client, auth_headers, monkeypatch
+):
+    """Every message of an ongoing discussion must be answered with the exact
+    same system prompt, even if the global settings or the news digest change
+    in between - continuity within an already-started discussion must not be
+    broken by a later refresh."""
+    captured_prompts = []
+
+    async def fake_generate_reply(history, system_prompt, tools=()):
+        captured_prompts.append(system_prompt)
+        return "Reponse"
+
+    monkeypatch.setattr(main, "generate_reply", fake_generate_reply)
+    headers = auth_headers()
+
+    chat_id = client.post("/chats", headers=headers).json()["id"]
+    client.post(f"/chats/{chat_id}/messages", json={"content": "Premier message"}, headers=headers)
+
+    client.put(
+        "/settings/system-prompt",
+        json={"system_prompt": "Nouvelles instructions apres coup"},
+        headers=headers,
+    )
+
+    client.post(f"/chats/{chat_id}/messages", json={"content": "Deuxieme message"}, headers=headers)
+
+    assert len(captured_prompts) == 2
+    assert captured_prompts[0] == captured_prompts[1]
+    assert "Nouvelles instructions apres coup" not in captured_prompts[1]

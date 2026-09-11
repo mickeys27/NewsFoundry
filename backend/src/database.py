@@ -1,6 +1,6 @@
 import os
-from models import User
-from sqlmodel import SQLModel, Session, create_engine, select
+from models import Chat, PressReview, PressReviewArticle, User
+from sqlmodel import SQLModel, Session, create_engine, delete, select
 import bcrypt
 
 DATABASE_URL = os.getenv("DATABASE_URL")
@@ -15,6 +15,14 @@ def get_session():
 def init_db():
     SQLModel.metadata.create_all(engine)
     print("Database initialized successfully")
+
+    with Session(engine) as session:
+        # Reset conversation data on every startup so discussions always
+        # start from zero; config/settings and users are left untouched.
+        session.exec(delete(PressReviewArticle))
+        session.exec(delete(PressReview))
+        session.exec(delete(Chat))
+        session.commit()
 
     # Creating a default user
     default_email = "test@test.com"

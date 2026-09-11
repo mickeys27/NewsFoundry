@@ -29,7 +29,8 @@
 .content {
   flex: 1;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   padding: 24px 16px 40px;
 }
 
@@ -63,9 +64,46 @@
 }
 
 .label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 14px;
   font-weight: 500;
   color: #1a1a1a;
+}
+
+.fieldSpacer {
+  margin-top: 8px;
+}
+
+.fieldHint {
+  font-size: 12px;
+  color: #9a9aa2;
+  margin: 0;
+}
+
+.defaultBadge {
+  font-size: 11px;
+  font-weight: 500;
+  color: #7c3aed;
+  background: #f1ecfd;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.numberInput {
+  width: 160px;
+  border: 1px solid #e5e5ea;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: #1a1a1a;
+  background: #f7f7fb;
+  font-family: inherit;
+}
+
+.numberInput:disabled {
+  opacity: 0.6;
 }
 
 .textarea {
@@ -137,4 +175,44 @@
 .loadingText {
   font-size: 14px;
   color: #6a6a6e;
+}
+
+.cardSpacer {
+  margin-top: 24px;
+}
+
+.refreshButton {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+  background: #2a2a31;
+  cursor: pointer;
+}
+
+.refreshButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.digestPreview {
+  margin-top: 20px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  background: #f7f7fb;
+  border: 1px solid #e5e5ea;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #4a4a4a;
+  white-space: pre-wrap;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.digestMeta {
+  font-size: 12px;
+  color: #9a9aa2;
+  margin: 8px 0 0;
 }
