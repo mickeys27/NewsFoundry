@@ -287,12 +287,8 @@ export default function Home() {
                           : styles.discussionItem
                       }
                     >
-                      <div className={styles.discussionTitle}>
-                        Discussion du {formatDate(chat.created_at)}
-                      </div>
-                      <div className={styles.discussionDate}>
-                        {chat.last_message || "Nouvelle discussion"}
-                      </div>
+                      <div className={styles.discussionTitle}>Discussion du :</div>
+                      <div className={styles.discussionDate}>{formatDate(chat.created_at)}</div>
                     </button>
                   </li>
                 ))}
