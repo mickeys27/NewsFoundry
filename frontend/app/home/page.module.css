@@ -8,6 +8,9 @@
 .breadcrumb {
   padding: 10px 20px;
   font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .breadcrumbLink {

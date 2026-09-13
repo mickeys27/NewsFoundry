@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Script from "next/script";
 import { useRouter } from "next/navigation";
+import AdminToggle from "@/app/components/AdminToggle";
 import { TOKEN_STORAGE_KEY } from "@/lib/auth";
 import styles from "./page.module.css";
 
@@ -70,15 +71,18 @@ export default function SwaggerPage() {
       />
 
       <div className={styles.breadcrumb}>
-        <a href="/home" className={styles.breadcrumbLink}>
-          Home
-        </a>
-        <span className={styles.breadcrumbSeparator}>/</span>
-        <a href="/settings" className={styles.breadcrumbLink}>
-          Paramètres
-        </a>
-        <span className={styles.breadcrumbSeparator}>/</span>
-        <span className={styles.breadcrumbCurrent}>SwaggerUI</span>
+        <div className={styles.breadcrumbLinks}>
+          <a href="/home" className={styles.breadcrumbLink}>
+            Home
+          </a>
+          <span className={styles.breadcrumbSeparator}>/</span>
+          <a href="/settings" className={styles.breadcrumbLink}>
+            Paramètres
+          </a>
+          <span className={styles.breadcrumbSeparator}>/</span>
+          <span className={styles.breadcrumbCurrent}>SwaggerUI</span>
+        </div>
+        <AdminToggle />
       </div>
 
       <div className={styles.header}>

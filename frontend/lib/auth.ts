@@ -21,3 +21,7 @@ export async function login(email: string, password: string): Promise<string> {
   const data: { access_token: string } = await response.json();
   return data.access_token;
 }
+
+export function logout(): void {
+  localStorage.removeItem(TOKEN_STORAGE_KEY);
+}

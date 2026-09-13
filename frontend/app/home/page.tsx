@@ -3,7 +3,9 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
-import { TOKEN_STORAGE_KEY } from "@/lib/auth";
+import AdminToggle from "@/app/components/AdminToggle";
+import { useAdminMode } from "@/lib/admin";
+import { TOKEN_STORAGE_KEY, logout } from "@/lib/auth";
 import {
   ChatError,
   createChat,
@@ -39,7 +41,13 @@ const envLinks = [
 ];
 
 function formatDate(isoDate: string): string {
-  return new Date(isoDate).toLocaleDateString("fr-FR");
+  return new Date(isoDate).toLocaleString("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 function formatRevueDate(isoDate: string): string {
@@ -55,6 +63,7 @@ function formatRevueDate(isoDate: string): string {
 
 export default function Home() {
   const router = useRouter();
+  const [isAdmin] = useAdminMode();
   const [chats, setChats] = useState<ChatSummary[]>([]);
   const [activeChatId, setActiveChatId] = useState<number | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -124,6 +133,11 @@ export default function Home() {
     setDiscussionPressReviews([]);
     setDraft(PRELOADED_DRAFT);
     setError(null);
+  }
+
+  function handleLogout() {
+    logout();
+    router.replace("/");
   }
 
   function handleShowRevueTab() {
@@ -222,28 +236,30 @@ export default function Home() {
         <a href="/home" className={styles.breadcrumbLink}>
           Home
         </a>
+        <AdminToggle />
       </div>
 
       <div className={styles.layout}>
         <aside className={styles.sidebar}>
           <div className={styles.sidebarHeader}>
             <span>NEWSFOUNDRY</span>
-            <span aria-hidden="true">🔒</span>
           </div>
 
-          <div className={styles.envLinks}>
-            {envLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.envLink}
-              >
-                {link.label}
-              </a>
-            ))}
-          </div>
+          {isAdmin && (
+            <div className={styles.envLinks}>
+              {envLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.envLink}
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          )}
 
           <nav className={styles.sidebarNav}>
             <div className={styles.menuSection}>
@@ -272,9 +288,11 @@ export default function Home() {
                       }
                     >
                       <div className={styles.discussionTitle}>
+                        Discussion du {formatDate(chat.created_at)}
+                      </div>
+                      <div className={styles.discussionDate}>
                         {chat.last_message || "Nouvelle discussion"}
                       </div>
-                      <div className={styles.discussionDate}>{formatDate(chat.created_at)}</div>
                     </button>
                   </li>
                 ))}
@@ -282,21 +300,23 @@ export default function Home() {
             </div>
           </nav>
 
-          <div className={styles.menuSection}>
-            <a href="/settings" className={styles.menuHeader}>
-              <span aria-hidden="true">⚙️</span>
-              <span>Paramètres</span>
-            </a>
-            <ul className={styles.discussionList}>
-              <li>
-                <a href="/settings/swagger" className={styles.discussionItem}>
-                  <div className={styles.discussionTitle}>SwaggerUI</div>
-                </a>
-              </li>
-            </ul>
-          </div>
+          {isAdmin && (
+            <div className={styles.menuSection}>
+              <a href="/settings" className={styles.menuHeader}>
+                <span aria-hidden="true">⚙️</span>
+                <span>Paramètres</span>
+              </a>
+              <ul className={styles.discussionList}>
+                <li>
+                  <a href="/settings/swagger" className={styles.discussionItem}>
+                    <div className={styles.discussionTitle}>SwaggerUI</div>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          )}
 
-          <button type="button" className={styles.logout}>
+          <button type="button" className={styles.logout} onClick={handleLogout}>
             <span aria-hidden="true">🚪</span>
             <span>Se déconnecter</span>
           </button>
@@ -381,7 +401,9 @@ export default function Home() {
                         </div>
                         {message.role === "user" && (
                           <div className={styles.avatarUser} aria-hidden="true">
-                            👤
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="#ffffff">
+                              <path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.4c-3.3 0-9.8 1.6-9.8 4.9v2.4h19.6v-2.4c0-3.3-6.5-4.9-9.8-4.9z" />
+                            </svg>
                           </div>
                         )}
                       </div>
@@ -482,7 +504,7 @@ export default function Home() {
                           </div>
                         )}
 
-                        {review.prompt && (
+                        {isAdmin && review.prompt && (
                           <div className={styles.promptUsed}>
                             <p className={styles.promptUsedLabel}>Prompt utilisé</p>
                             <p className={styles.promptUsedText}>{review.prompt}</p>

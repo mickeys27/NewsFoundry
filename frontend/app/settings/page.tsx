@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import AdminToggle from "@/app/components/AdminToggle";
 import { TOKEN_STORAGE_KEY } from "@/lib/auth";
 import {
   getDisplaySettings,
@@ -178,11 +179,14 @@ export default function SettingsPage() {
   return (
     <div className={styles.appShell}>
       <div className={styles.breadcrumb}>
-        <a href="/home" className={styles.breadcrumbLink}>
-          Home
-        </a>
-        <span className={styles.breadcrumbSeparator}>/</span>
-        <span className={styles.breadcrumbCurrent}>Paramètres</span>
+        <div className={styles.breadcrumbLinks}>
+          <a href="/home" className={styles.breadcrumbLink}>
+            Home
+          </a>
+          <span className={styles.breadcrumbSeparator}>/</span>
+          <span className={styles.breadcrumbCurrent}>Paramètres</span>
+        </div>
+        <AdminToggle />
       </div>
 
       <div className={styles.content}>
