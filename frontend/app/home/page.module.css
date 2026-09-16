@@ -215,13 +215,21 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  background: #f0f0f4;
+  background: none;
   color: #6a6a6e;
+}
+
+.tab:hover {
+  background: #f7f7fb;
 }
 
 .tabActive {
   background: #7c3aed;
   color: #ffffff;
+}
+
+.tabActive:hover {
+  background: #7c3aed;
 }
 
 .generateRevueButton {
@@ -240,7 +248,7 @@
 }
 
 .generateRevueButton:hover {
-  background: #6b2fd6;
+  background: #2a2a31;
 }
 
 .chatArea {
@@ -644,8 +652,13 @@
   font-size: 16px;
 }
 
+.sendButton:hover:not(:disabled) {
+  background: #2a2a31;
+}
+
 .sendButton:disabled {
   background: #d9d9e0;
+  color: #9a9aa2;
   cursor: not-allowed;
 }
 

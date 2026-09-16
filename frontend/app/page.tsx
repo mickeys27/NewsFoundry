@@ -80,7 +80,7 @@ export default function Home() {
           <button
             type="submit"
             disabled={isLoading}
-            className="mt-2 rounded-full bg-foreground px-5 py-2.5 font-medium text-background transition-colors hover:bg-[#383838] disabled:cursor-not-allowed disabled:opacity-60 dark:hover:bg-[#ccc]"
+            className="mt-2 rounded-full bg-[#2a2a31] px-5 py-2.5 font-medium text-white transition-colors hover:bg-[#1a1a1f] disabled:cursor-not-allowed disabled:bg-[#d9d9e0] disabled:text-[#9a9aa2]"
           >
             {isLoading ? "Connexion en cours…" : "Se connecter"}
           </button>

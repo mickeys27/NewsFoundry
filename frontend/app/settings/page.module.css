@@ -148,9 +148,14 @@
   cursor: pointer;
 }
 
+.saveButton:hover:not(:disabled) {
+  background: #2a2a31;
+}
+
 .saveButton:disabled {
   cursor: not-allowed;
-  opacity: 0.6;
+  background: #d9d9e0;
+  color: #9a9aa2;
 }
 
 .resetButton {
@@ -199,9 +204,14 @@
   cursor: pointer;
 }
 
+.refreshButton:hover:not(:disabled) {
+  background: #1a1a1f;
+}
+
 .refreshButton:disabled {
   cursor: not-allowed;
-  opacity: 0.6;
+  background: #d9d9e0;
+  color: #9a9aa2;
 }
 
 .digestPreview {
