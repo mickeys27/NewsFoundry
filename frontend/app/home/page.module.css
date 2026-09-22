@@ -590,6 +590,10 @@
   border: 1px solid #e5e5ea;
 }
 
+.promptUsedChat {
+  margin: 16px 16px 0;
+}
+
 .promptUsedLabel {
   font-size: 12px;
   font-weight: 600;

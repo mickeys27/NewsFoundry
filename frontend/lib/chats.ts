@@ -31,7 +31,12 @@ export async function listChats(): Promise<ChatSummary[]> {
   return response.json();
 }
 
-export async function createChat(): Promise<number> {
+export type ChatCreateResult = {
+  id: number;
+  system_prompt: string;
+};
+
+export async function createChat(): Promise<ChatCreateResult> {
   const response = await fetch(`${API_URL}/chats`, {
     method: "POST",
     headers: authHeaders(),
@@ -41,11 +46,15 @@ export async function createChat(): Promise<number> {
     throw new ChatError("Impossible de créer une nouvelle discussion.");
   }
 
-  const data: { id: number } = await response.json();
-  return data.id;
+  return response.json();
 }
 
-export async function getChatMessages(chatId: number): Promise<ChatMessage[]> {
+export type ChatDetail = {
+  messages: ChatMessage[];
+  system_prompt: string;
+};
+
+export async function getChatMessages(chatId: number): Promise<ChatDetail> {
   const response = await fetch(`${API_URL}/chats/${chatId}`, {
     headers: authHeaders(),
   });
@@ -54,8 +63,7 @@ export async function getChatMessages(chatId: number): Promise<ChatMessage[]> {
     throw new ChatError("Impossible de récupérer cette discussion.");
   }
 
-  const data: { messages: ChatMessage[] } = await response.json();
-  return data.messages;
+  return response.json();
 }
 
 export async function sendMessage(chatId: number, content: string): Promise<ChatMessage> {

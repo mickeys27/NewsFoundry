@@ -41,6 +41,7 @@ class LoginResponse(BaseModel):
 
 class ChatCreateResponse(BaseModel):
     id: int
+    system_prompt: str
 
 
 class ChatSummary(BaseModel):
@@ -52,6 +53,7 @@ class ChatSummary(BaseModel):
 class ChatDetailResponse(BaseModel):
     id: int
     messages: list[dict]
+    system_prompt: str
 
 
 class MessageRequest(BaseModel):
@@ -459,7 +461,7 @@ async def create_chat(
     session.add(chat)
     session.commit()
     session.refresh(chat)
-    return ChatCreateResponse(id=chat.id)
+    return ChatCreateResponse(id=chat.id, system_prompt=chat.system_prompt)
 
 
 @app.get("/chats/{chat_id}", response_model=ChatDetailResponse)
@@ -469,7 +471,7 @@ async def get_chat(
     session: Session = Depends(get_session),
 ):
     chat = get_owned_chat(chat_id, current_user, session)
-    return ChatDetailResponse(id=chat.id, messages=chat.messages)
+    return ChatDetailResponse(id=chat.id, messages=chat.messages, system_prompt=chat.system_prompt)
 
 
 @app.post("/chats/{chat_id}/messages", response_model=MessageResponse)

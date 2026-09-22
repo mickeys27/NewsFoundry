@@ -65,8 +65,10 @@ export default function Home() {
   const router = useRouter();
   const [isAdmin] = useAdminMode();
   const [chats, setChats] = useState<ChatSummary[]>([]);
+  const [isLoadingChats, setIsLoadingChats] = useState(true);
   const [activeChatId, setActiveChatId] = useState<number | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [activeChatSystemPrompt, setActiveChatSystemPrompt] = useState("");
   const [draft, setDraft] = useState(PRELOADED_DRAFT);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -88,7 +90,8 @@ export default function Home() {
 
     listChats()
       .then(setChats)
-      .catch(() => setError("Impossible de récupérer vos discussions."));
+      .catch(() => setError("Impossible de récupérer vos discussions."))
+      .finally(() => setIsLoadingChats(false));
   }, [router]);
 
   useEffect(() => {
@@ -117,8 +120,9 @@ export default function Home() {
     setIsLoadingMessages(true);
     loadDiscussionPressReviews(chatId);
     try {
-      const chatMessages = await getChatMessages(chatId);
-      setMessages(chatMessages);
+      const chatDetail = await getChatMessages(chatId);
+      setMessages(chatDetail.messages);
+      setActiveChatSystemPrompt(chatDetail.system_prompt);
     } catch {
       setError("Impossible de récupérer cette discussion.");
     } finally {
@@ -130,6 +134,7 @@ export default function Home() {
     setActiveTab("chat");
     setActiveChatId(null);
     setMessages([]);
+    setActiveChatSystemPrompt("");
     setDiscussionPressReviews([]);
     setDraft(PRELOADED_DRAFT);
     setError(null);
@@ -176,8 +181,10 @@ export default function Home() {
     try {
       let chatId = activeChatId;
       if (chatId === null) {
-        chatId = await createChat();
+        const created = await createChat();
+        chatId = created.id;
         setActiveChatId(chatId);
+        setActiveChatSystemPrompt(created.system_prompt);
         setDiscussionPressReviews([]);
         setChats((previous) => [
           { id: chatId as number, created_at: new Date().toISOString(), last_message: content },
@@ -275,6 +282,7 @@ export default function Home() {
                 <span aria-hidden="true">💬</span>
                 <span>Discussion</span>
               </button>
+              {isLoadingChats && <p className={styles.loadingText}>Chargement…</p>}
               <ul className={styles.discussionList}>
                 {chats.slice(0, 5).map((chat) => (
                   <li key={chat.id}>
@@ -349,6 +357,13 @@ export default function Home() {
 
           {activeTab === "chat" ? (
             <>
+              {isAdmin && activeChatId !== null && activeChatSystemPrompt && (
+                <div className={`${styles.promptUsed} ${styles.promptUsedChat}`}>
+                  <p className={styles.promptUsedLabel}>Prompt utilisé pour cette discussion</p>
+                  <p className={styles.promptUsedText}>{activeChatSystemPrompt}</p>
+                </div>
+              )}
+
               <div className={styles.chatArea} ref={chatAreaRef}>
                 {showWelcome ? (
                   <div className={styles.welcomeCard}>
