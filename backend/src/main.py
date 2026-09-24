@@ -21,13 +21,18 @@ from sqlmodel import Session, select
 app = FastAPI()
 
 
+frontend_url = os.getenv("FRONTEND_URL", "")
+
 allowed_origins = [
-    "http://localhost:3000",
-    "https://news-foundry-git-main-generate-ia.vercel.app",
+    origin.strip()
+    for origin in frontend_url.split(",")
+    if origin.strip()
 ]
 
-print("=== CORS CONFIGURATION ===")
-print("Allowed origins:", allowed_origins)
+print("========== CORS ==========")
+print("FRONTEND_URL =", repr(frontend_url))
+print("ALLOWED_ORIGINS =", repr(allowed_origins))
+print("==========================")
 
 app.add_middleware(
     CORSMiddleware,
