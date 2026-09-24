@@ -29,10 +29,6 @@ allowed_origins = [
     if origin.strip()
 ]
 
-print("========== CORS ==========")
-print("FRONTEND_URL =", repr(frontend_url))
-print("ALLOWED_ORIGINS =", repr(allowed_origins))
-print("==========================")
 
 app.add_middleware(
     CORSMiddleware,
